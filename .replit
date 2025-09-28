@@ -4,7 +4,7 @@ expertMode = true
 
 [nix]
 channel = "stable-25_05"
-packages = ["glib", "gtk3", "atk", "cairo", "gdk-pixbuf", "nss", "libdrm", "mesa", "xvfb-run", "xorg.xvfb", "libGL", "libglvnd", "xorg.libX11", "xorg.libXext", "xorg.libXdamage", "xorg.libXrandr", "xorg.libXcomposite", "xorg.libXcursor", "xorg.libXi"]
+packages = ["glib", "gtk3", "atk", "cairo", "gdk-pixbuf", "nss", "libdrm", "mesa", "xvfb-run", "xorg.xvfb", "libGL", "libglvnd", "xorg.libX11", "xorg.libXext", "xorg.libXdamage", "xorg.libXrandr", "xorg.libXcomposite", "xorg.libXcursor", "xorg.libXi", "libgbm", "libxkbcommon", "wayland", "dbus", "glibc", "alsa-lib", "libpulseaudio"]
 
 [workflows]
 runButton = "Project"
@@ -24,7 +24,11 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "xvfb-run -a npm run dev"
+args = "xvfb-run -a electron dist/main.js --no-sandbox --disable-setuid-sandbox"
 
 [workflows.workflow.metadata]
-outputType = "console"
+outputType = "vnc"
+
+[[ports]]
+localPort = 33331
+externalPort = 80

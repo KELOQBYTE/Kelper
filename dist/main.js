@@ -5,6 +5,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const electron_1 = require("electron");
 const node_path_1 = __importDefault(require("node:path"));
+// Configure Electron for headless/server environment
+electron_1.app.commandLine.appendSwitch('no-sandbox');
+electron_1.app.commandLine.appendSwitch('disable-setuid-sandbox');
+electron_1.app.commandLine.appendSwitch('disable-gpu');
+electron_1.app.commandLine.appendSwitch('disable-gpu-sandbox');
+electron_1.app.commandLine.appendSwitch('disable-software-rasterizer');
+electron_1.app.commandLine.appendSwitch('disable-dev-shm-usage');
+electron_1.app.commandLine.appendSwitch('disable-audio-output');
+electron_1.app.commandLine.appendSwitch('disable-audio-input');
+electron_1.app.commandLine.appendSwitch('mute-audio');
+electron_1.app.commandLine.appendSwitch('disable-web-security');
+electron_1.app.commandLine.appendSwitch('ignore-certificate-errors');
+electron_1.app.commandLine.appendSwitch('disable-background-networking');
+// Sandbox disabled via command line switches above
 let overlay = null;
 let settings = null;
 let tray = null;

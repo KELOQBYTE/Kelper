@@ -1,6 +1,22 @@
 import { app, BrowserWindow, ipcMain, globalShortcut, Tray, Menu, screen, nativeImage } from 'electron'
 import path from 'node:path'
 
+// Configure Electron for headless/server environment
+app.commandLine.appendSwitch('no-sandbox')
+app.commandLine.appendSwitch('disable-setuid-sandbox')
+app.commandLine.appendSwitch('disable-gpu')
+app.commandLine.appendSwitch('disable-gpu-sandbox')
+app.commandLine.appendSwitch('disable-software-rasterizer')
+app.commandLine.appendSwitch('disable-dev-shm-usage')
+app.commandLine.appendSwitch('disable-audio-output')
+app.commandLine.appendSwitch('disable-audio-input')
+app.commandLine.appendSwitch('mute-audio')
+app.commandLine.appendSwitch('disable-web-security')
+app.commandLine.appendSwitch('ignore-certificate-errors')
+app.commandLine.appendSwitch('disable-background-networking')
+
+// Sandbox disabled via command line switches above
+
 let overlay: BrowserWindow | null = null
 let settings: BrowserWindow | null = null
 let tray: Tray | null = null
