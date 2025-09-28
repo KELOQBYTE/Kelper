@@ -1,0 +1,30 @@
+modules = ["nodejs-20"]
+[agent]
+expertMode = true
+
+[nix]
+channel = "stable-25_05"
+packages = ["glib", "gtk3", "atk", "cairo", "gdk-pixbuf", "nss", "libdrm", "mesa", "xvfb-run", "xorg.xvfb", "libGL", "libglvnd", "xorg.libX11", "xorg.libXext", "xorg.libXdamage", "xorg.libXrandr", "xorg.libXcomposite", "xorg.libXcursor", "xorg.libXi"]
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Electron App"
+
+[[workflows.workflow]]
+name = "Electron App"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "xvfb-run -a npm run dev"
+
+[workflows.workflow.metadata]
+outputType = "console"

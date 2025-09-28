@@ -1,0 +1,20 @@
+{
+  "name": "interview-coach-overlay",
+  "version": "1.0.0",
+  "description": "An always-on-top transparent overlay interview coach desktop app",
+  "main": "src/main.js",
+  "scripts": {
+    "dev": "electron src/main.js",
+    "build": "npm run compile",
+    "start": "electron src/main.js",
+    "compile": "tsc",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.17",
+    "electron": "^27.3.11",
+    "typescript": "^5.9.2"
+  },
+  "author": "Interview Coach",
+  "license": "MIT"
+}
