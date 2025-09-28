@@ -1,0 +1,97 @@
+body {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    user-select: none;
+    overflow: hidden;
+}
+
+#panel {
+    backdrop-filter: blur(8px);
+    background: rgba(20, 20, 20, 0.35);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    padding: 12px;
+    margin: 8px;
+    width: 400px;
+    min-height: 140px;
+    color: #ffffff;
+    transition: all 0.2s ease;
+}
+
+#panel:hover {
+    background: rgba(30, 30, 30, 0.5);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 6px;
+}
+
+.title {
+    font-weight: bold;
+    color: #4CAF50;
+    font-size: 14px;
+}
+
+#toggleBtn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    color: white;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.2s ease;
+}
+
+#toggleBtn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.content {
+    line-height: 1.4;
+}
+
+.prompt-label {
+    font-style: italic;
+    color: #FFD700;
+    margin: 8px 0;
+    padding: 8px;
+    background: rgba(255, 215, 0, 0.1);
+    border-radius: 4px;
+    border-left: 3px solid #FFD700;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    font-size: 11px;
+}
+
+.controls label {
+    color: #ccc;
+}
+
+#opacitySlider {
+    flex: 1;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+}
+
+#opacityValue {
+    color: #4CAF50;
+    font-weight: bold;
+    min-width: 30px;
+}

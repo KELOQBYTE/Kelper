@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Coach Settings</title>
+    <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💼 Interview Coach Settings</h1>
+            <p>Configure your overlay preferences</p>
+        </header>
+        
+        <main>
+            <section class="setting-group">
+                <h2>Appearance</h2>
+                
+                <div class="setting-item">
+                    <label for="opacityRange">Overlay Opacity:</label>
+                    <div class="range-container">
+                        <input type="range" id="opacityRange" min="0.6" max="1.0" step="0.05" value="0.8">
+                        <span id="opacityDisplay">80%</span>
+                    </div>
+                </div>
+                
+                <div class="setting-item">
+                    <label>Default Click-through:</label>
+                    <div class="toggle-container">
+                        <input type="checkbox" id="clickThroughToggle" checked>
+                        <label for="clickThroughToggle" class="toggle-label">Enable click-through by default</label>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="setting-group">
+                <h2>Position</h2>
+                
+                <div class="setting-item">
+                    <label>Window Position:</label>
+                    <div class="position-grid">
+                        <button class="position-btn" data-position="top-left">Top Left</button>
+                        <button class="position-btn" data-position="top-right">Top Right</button>
+                        <button class="position-btn" data-position="bottom-left">Bottom Left</button>
+                        <button class="position-btn" data-position="bottom-right">Bottom Right</button>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="setting-group">
+                <h2>Controls</h2>
+                
+                <div class="setting-item">
+                    <button id="toggleOverlay" class="action-btn">Toggle Overlay Visibility</button>
+                    <button id="resetSettings" class="action-btn secondary">Reset to Defaults</button>
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <p>Use <kbd>Ctrl+Shift+K</kbd> (or <kbd>Cmd+Shift+K</kbd> on Mac) to toggle overlay globally</p>
+        </footer>
+    </div>
+    
+    <script src="settings.js"></script>
+</body>
+</html>

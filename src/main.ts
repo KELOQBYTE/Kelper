@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, globalShortcut, Tray, Menu, screen } from 'electron'
+import { app, BrowserWindow, ipcMain, globalShortcut, Tray, Menu, screen, nativeImage } from 'electron'
 import path from 'node:path'
 
 let overlay: BrowserWindow | null = null
@@ -43,8 +43,9 @@ function createWindows() {
       skipTransformProcessType: true 
     })
     overlay.setAlwaysOnTop(true, 'screen-saver')
-    overlay.setIgnoreMouseEvents(true, { forward: true })
-    overlay.loadFile('overlay.html')
+    // Start with click-through disabled for UI interaction
+    overlay.setIgnoreMouseEvents(false, { forward: true })
+    overlay.loadFile(path.join(__dirname, 'overlay.html'))
     console.log('Overlay window created successfully')
 
     console.log('Creating settings window...')
@@ -58,7 +59,7 @@ function createWindows() {
         nodeIntegration: false,
       },
     })
-    settings.loadFile('settings.html')
+    settings.loadFile(path.join(__dirname, 'settings.html'))
     console.log('Settings window created successfully')
 
     // Create simple tray icon (using a base64 encoded 16x16 icon)
@@ -66,7 +67,8 @@ function createWindows() {
     
     try {
       console.log('Creating system tray...')
-      tray = new Tray(iconData)
+      const trayIcon = nativeImage.createFromDataURL(iconData)
+      tray = new Tray(trayIcon)
       const menu = Menu.buildFromTemplate([
         { 
           label: 'Show/Hide Overlay', 

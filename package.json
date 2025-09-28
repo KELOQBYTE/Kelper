@@ -2,13 +2,12 @@
   "name": "interview-coach-overlay",
   "version": "1.0.0",
   "description": "An always-on-top transparent overlay interview coach desktop app",
-  "main": "src/main.js",
+  "main": "dist/main.js",
   "scripts": {
-    "dev": "electron src/main.js",
+    "dev": "npm run compile && electron dist/main.js",
     "build": "npm run compile",
-    "start": "electron src/main.js",
-    "compile": "tsc",
-    "postinstall": "electron-builder install-app-deps"
+    "start": "npm run compile && electron dist/main.js",
+    "compile": "tsc && cp src/preload.js dist/ && cp overlay.* settings.* dist/"
   },
   "devDependencies": {
     "@types/node": "^20.19.17",
