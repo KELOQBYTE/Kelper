@@ -1,0 +1,174 @@
+Create or update an Electron project to implement a personal “interview coach” overlay with the following requirements. Produce complete files, not diffs. After generating, run and verify the overlay floats above other windows, is click‑through by default, and can be shown/hidden via a global shortcut.
+
+Windows and behavior:
+
+Two windows: a) overlay BrowserWindow (frameless, transparent, always‑on‑top, click‑through by default), b) standard settings BrowserWindow.
+
+Overlay BrowserWindow options: frame:false, transparent:true, resizable:false, movable:true, focusable:false, alwaysOnTop:true, hasShadow:false, skipTaskbar:true, webPreferences: { preload, contextIsolation:true, nodeIntegration:false }.
+
+Immediately after creating the overlay:
+
+overlay.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true, skipTransformProcessType: true })
+
+overlay.setAlwaysOnTop(true, 'screen-saver')
+
+overlay.setIgnoreMouseEvents(true, { forward: true })
+
+Register a global shortcut CommandOrControl+Shift+K to toggle overlay show/hide; unregister on quit.
+
+Provide IPC handlers to control click‑through and opacity from the renderer.
+
+Files to generate:
+
+package.json with scripts: dev (electron with ts-node or vite-electron), build, start.
+
+src/main.ts (or main.js) with:
+
+app lifecycle, createWindows(), tray menu (“Show/Hide Overlay”, “Quit”)
+
+BrowserWindow for overlay and settings per above
+
+overlay.loadFile('overlay.html'), settings.loadFile('settings.html')
+
+overlay.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true, skipTransformProcessType: true })
+
+overlay.setAlwaysOnTop(true, 'screen-saver')
+
+overlay.setIgnoreMouseEvents(true, { forward: true })
+
+IPC handlers:
+ipcMain.handle('overlay:setClickThrough', (_evt, ignore:boolean) => overlay?.setIgnoreMouseEvents(ignore, { forward:true }))
+ipcMain.handle('overlay:setOpacity', (_evt, alpha:number) => overlay?.setOpacity(alpha))
+ipcMain.handle('overlay:toggle', () => { if (!overlay) return; overlay.isVisible() ? overlay.hide() : overlay.show() })
+ipcMain.handle('overlay:setPositionPreset', (_evt, preset:'top-right'|'bottom-right'|'top-left'|'bottom-left') => { /* compute and setBounds */ })
+
+Global hotkey: CommandOrControl+Shift+K => toggles overlay visibility
+
+Clean up: globalShortcut.unregisterAll() on will-quit
+
+src/preload.js with:
+contextBridge.exposeInMainWorld('overlay', {
+setClickThrough: (ignore) => ipcRenderer.invoke('overlay:setClickThrough', ignore),
+setOpacity: (alpha) => ipcRenderer.invoke('overlay:setOpacity', alpha),
+toggle: () => ipcRenderer.invoke('overlay:toggle'),
+setPositionPreset: (preset) => ipcRenderer.invoke('overlay:setPositionPreset', preset),
+})
+
+overlay.html:
+Minimal HTML with a floating panel <div id="panel"> that shows short coaching prompts; import overlay.js and overlay.css; keep background RGBA for translucency.
+
+overlay.js:
+
+On startup: call window.overlay.setClickThrough(true)
+
+Add mouseenter on #panel => window.overlay.setClickThrough(false)
+
+Add mouseleave on #panel => window.overlay.setClickThrough(true)
+
+Hook a “hide/show” button to window.overlay.toggle()
+
+Optional slider to adjust opacity via window.overlay.setOpacity(value)
+
+overlay.css:
+
+Transparent glass effect: backdrop-filter: blur(8px); background: rgba(20,20,20,0.35); border-radius: 10px; small shadow; monospace font for hints.
+
+settings.html + settings.js:
+
+Controls: opacity slider (0.6–1.0), position presets (top‑right, bottom‑right, top‑left, bottom‑left), default click‑through toggle.
+
+Wire to preload APIs; persist in localStorage and apply on next launch.
+
+Code example for main.ts (TypeScript; provide JS variant if project isn’t TS):
+
+import { app, BrowserWindow, ipcMain, globalShortcut, Tray, Menu, screen } from 'electron'
+import path from 'node:path'
+
+let overlay: BrowserWindow | null = null
+let settings: BrowserWindow | null = null
+let tray: Tray | null = null
+
+function calcPresetBounds(preset: 'top-right'|'bottom-right'|'top-left'|'bottom-left', size = { w: 420, h: 160 }) {
+const { width, height } = screen.getPrimaryDisplay().workAreaSize
+const margin = 16
+const positions = {
+'top-right': { x: width - size.w - margin, y: margin },
+'bottom-right': { x: width - size.w - margin, y: height - size.h - margin },
+'top-left': { x: margin, y: margin },
+'bottom-left': { x: margin, y: height - size.h - margin },
+}
+return positions[preset]
+}
+
+function createWindows() {
+overlay = new BrowserWindow({
+width: 420,
+height: 160,
+frame: false,
+transparent: true,
+resizable: false,
+movable: true,
+focusable: false,
+alwaysOnTop: true,
+hasShadow: false,
+skipTaskbar: true,
+webPreferences: {
+preload: path.join(__dirname, 'preload.js'),
+contextIsolation: true,
+nodeIntegration: false,
+},
+})
+overlay.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true, skipTransformProcessType: true })
+overlay.setAlwaysOnTop(true, 'screen-saver')
+overlay.setIgnoreMouseEvents(true, { forward: true })
+overlay.loadFile('overlay.html')
+
+settings = new BrowserWindow({
+width: 720,
+height: 520,
+title: 'Coach Settings',
+webPreferences: {
+preload: path.join(__dirname, 'preload.js'),
+contextIsolation: true,
+nodeIntegration: false,
+},
+})
+settings.loadFile('settings.html')
+
+tray = new Tray(process.platform === 'darwin' ? path.join(__dirname, 'trayTemplate.png') : path.join(__dirname, 'tray.png'))
+const menu = Menu.buildFromTemplate([
+{ label: 'Show/Hide Overlay', click: () => overlay?.isVisible() ? overlay.hide() : overlay?.show() },
+{ label: 'Quit', click: () => { app.quit() } },
+])
+tray.setToolTip('Interview Coach')
+tray.setContextMenu(menu)
+}
+
+app.whenReady().then(() => {
+createWindows()
+globalShortcut.register('CommandOrControl+Shift+K', () => {
+if (!overlay) return
+overlay.isVisible() ? overlay.hide() : overlay.show()
+})
+})
+
+ipcMain.handle('overlay:setClickThrough', (_evt, ignore: boolean) => {
+overlay?.setIgnoreMouseEvents(ignore, { forward: true })
+})
+ipcMain.handle('overlay:setOpacity', (_evt, alpha: number) => {
+overlay?.setOpacity(alpha)
+})
+ipcMain.handle('overlay:toggle', () => {
+if (!overlay) return
+overlay.isVisible() ? overlay.hide() : overlay.show()
+})
+ipcMain.handle('overlay:setPositionPreset', (_evt, preset: 'top-right'|'bottom-right'|'top-left'|'bottom-left') => {
+if (!overlay) return
+const pos = calcPresetBounds(preset, { w: 420, h: 160 })
+overlay.setBounds({ x: pos.x, y: pos.y, width: 420, height: 160 })
+})
+
+app.on('will-quit', () => { globalShortcut.unregisterAll() })
+app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit() })
+
+After this overlay foundation is running, you will add the Realtime voice loop in a later step; for now, confirm that: a) the overlay floats on top, b) mouse passes through except when hovering panel, c) the global hotkey shows/hides the overlay, and d) settings adjust opacity/position instantly.
